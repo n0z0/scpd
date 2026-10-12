@@ -50,7 +50,7 @@ Log ini memetakan event ke taktik dan teknik **MITRE ATT&CK**:
 
 ## 🔬 Asynchronous Metadata Forensics Engine & Concurrency
 
-Ketika penyerang mengunggah file ke honeypot SFTP (`T1105`), `scp` secara otomatis menjalankan analisis forensik metadata secara **asinkron** menggunakan **bounded Goroutine worker pool** (`runtime.NumCPU() * 2` worker, buffered channel 1024):
+Ketika penyerang mengunggah file ke honeypot SFTP (`T1105`), `scpd` secara otomatis menjalankan analisis forensik metadata secara **asinkron** menggunakan **bounded Goroutine worker pool** (`runtime.NumCPU() * 2` worker, buffered channel 1024):
 - **Zero Latency Impact:** Sesi transfer SFTP penyerang selesai secara instan (< 1ms) tanpa menunggu proses forensik selesai.
 - **Panic-Safe:** Seluruh parser dilindungi pemulihan (*recover*) otomatis sehingga berkas korup tidak akan menghentikan server.
 - **Dukungan Format Forensik:**
