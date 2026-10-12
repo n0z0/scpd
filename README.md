@@ -1,4 +1,4 @@
-# scp
+# scpd
 
 **SFTP Honeypot Server** yang terintegrasi dengan [synwatcher](https://github.com/n0z0/synwatcher) dan [cacheDB](https://github.com/n0z0/cachedb).
 
@@ -10,7 +10,7 @@ Server ini mendengarkan pada port **`60606`** dan mengimplementasikan mekanisme 
 flowchart LR
     A[Penyerang] -- "1. Scan Port X" --> B[synwatcher]
     B -- "2. Set(IP, Port X)" --> C[(cacheDB :50051)]
-    A -- "3. SFTP Connect :60606<br>user=IP, pass=X" --> D[scp Server]
+    A -- "3. SFTP Connect :60606<br>user=IP, pass=X" --> D[scpd Server]
     D -- "4. Get(IP) == pass?" --> C
     D -- "5. Valid!" --> E[Audio & Notif Desktop<br>Log CTI & Peserta]
 ```
@@ -21,7 +21,7 @@ flowchart LR
 
 1. Penyerang men-scan port target menggunakan scanner (seperti `nmap` atau script khusus).
 2. `synwatcher` mendeteksi paket SYN/UDP dan mendaftarkan pasangan `IP -> Port` ke `cacheDB`.
-3. Penyerang mencoba terhubung ke SFTP Server (`scp`) pada port **`60606`**:
+3. Penyerang mencoba terhubung ke SFTP Server (`scpd`) pada port **`60606`**:
    - Jika username cocok dengan IP klien DAN password cocok dengan port yang tersimpan di `cacheDB`:
      - Otentikasi **berhasil**.
      - Nomor urut peserta dihitung: `Port mod 30 = Nomor Urut`.
@@ -173,16 +173,16 @@ Ketika penyerang mengunggah file ke honeypot SFTP (`T1105`), `scp` secara otomat
 ### Windows (PowerShell)
 Jalankan perintah berikut untuk mengunduh binary rilis terbaru dan otomatis mendaftarkannya ke PATH pengguna:
 ```powershell
-irm https://raw.githubusercontent.com/n0z0/scp/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/n0z0/scpd/main/install.ps1 | iex
 ```
 *(Bisa dijalankan kapan saja untuk upgrade ke versi terbaru).*
 
 ### Linux (Bash)
 Jalankan perintah berikut di terminal:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/n0z0/scp/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/n0z0/scpd/main/install.sh | bash
 ```
-*(Binary otomatis dipasang sebagai `scp-server` ke `/usr/local/bin` atau `~/.local/bin` agar tidak bentrok dengan utilitas openSSH `scp` bawaan Linux).*
+*(Binary otomatis dipasang sebagai `scpd` ke `/usr/local/bin` atau `~/.local/bin` agar tidak bentrok dengan utilitas openSSH `scp` bawaan OS).*
 
 ---
 
@@ -194,11 +194,8 @@ curl -fsSL https://raw.githubusercontent.com/n0z0/scp/main/install.sh | bash
 
 ### Menjalankan Langsung
 ```powershell
-# Windows
-scp
-
-# Linux
-scp-server
+# Windows & Linux
+scpd
 ```
 
 Server akan otomatis:
@@ -219,7 +216,7 @@ sftp -P 60606 192.168.1.150@<IP_HONEYPOT>
 
 Release dibuat otomatis oleh [GitHub Actions](.github/workflows/release.yml) setiap kali ada push ke branch `main`:
 - Versi patch dinaikkan secara otomatis dari tag terakhir (misal `v0.1.1` -> `v0.1.2`).
-- Binary langsung siap pakai (`scp_windows_amd64.exe` dan `scp_linux_amd64`) serta arsip bundel di-upload langsung ke halaman Releases.
+- Binary langsung siap pakai (`scpd_windows_amd64.exe` dan `scpd_linux_amd64`) serta arsip bundel di-upload langsung ke halaman Releases.
 
 ---
 

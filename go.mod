@@ -1,4 +1,4 @@
-module github.com/n0z0/scp
+module github.com/n0z0/scpd
 
 go 1.25.3
 

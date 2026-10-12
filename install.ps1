@@ -1,17 +1,17 @@
 [CmdletBinding()]
 param (
     [string]$Version = "latest",
-    [string]$InstallDir = "$env:LOCALAPPDATA\Programs\scp"
+    [string]$InstallDir = "$env:LOCALAPPDATA\Programs\scpd"
 )
 
 $ErrorActionPreference = "Stop"
 
 Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host " scp Server Installer / Upgrader (Windows)" -ForegroundColor Cyan
+Write-Host " scpd Server Installer / Upgrader (Windows)" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 
 # 1. Tentukan tag rilis
-$Repo = "n0z0/scp"
+$Repo = "n0z0/scpd"
 if ($Version -eq "latest") {
     Write-Host "[*] Memeriksa rilis terbaru dari GitHub..." -ForegroundColor Yellow
     try {
@@ -32,13 +32,13 @@ if ($Version -eq "latest") {
 Write-Host "[*] Target versi: $TargetTag" -ForegroundColor Green
 
 # 2. Cek apakah versi sudah terpasang
-$CurrentExe = Join-Path $InstallDir "scp.exe"
+$CurrentExe = Join-Path $InstallDir "scpd.exe"
 if (Test-Path $CurrentExe) {
     try {
         $InstalledVer = (& $CurrentExe -version 2>&1).Trim()
         Write-Host "[*] Versi terpasang saat ini: $InstalledVer" -ForegroundColor Cyan
         if ($InstalledVer -like "*$TargetTag*") {
-            Write-Host "[OK] scp sudah berada pada versi terbaru ($TargetTag)." -ForegroundColor Green
+            Write-Host "[OK] scpd sudah berada pada versi terbaru ($TargetTag)." -ForegroundColor Green
             Write-Host "    Lokasi: $CurrentExe"
             $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
             if ($UserPath -notlike "*$InstallDir*") {
@@ -57,9 +57,9 @@ if (-not (Test-Path $InstallDir)) {
     New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
 }
 
-$DirectExeUrl = "https://github.com/$Repo/releases/download/$TargetTag/scp_windows_amd64.exe"
-$TargetExePath = Join-Path $InstallDir "scp.exe"
-$TempExePath = Join-Path $InstallDir ("scp_new_" + [Guid]::NewGuid().ToString('N') + ".exe")
+$DirectExeUrl = "https://github.com/$Repo/releases/download/$TargetTag/scpd_windows_amd64.exe"
+$TargetExePath = Join-Path $InstallDir "scpd.exe"
+$TempExePath = Join-Path $InstallDir ("scpd_new_" + [Guid]::NewGuid().ToString('N') + ".exe")
 
 Write-Host "[*] Mengunduh binary langsung dari $DirectExeUrl ..." -ForegroundColor Yellow
 $Downloaded = $false
@@ -73,14 +73,14 @@ try {
     Write-Host "[*] Binary langsung tidak ditemukan, mencoba unduh dari zip bundel..." -ForegroundColor Gray
     Remove-Item -Path $TempExePath -Force -ErrorAction SilentlyContinue
 
-    $ZipName = "scp_" + $TargetTag + "_windows_amd64.zip"
+    $ZipName = "scpd_" + $TargetTag + "_windows_amd64.zip"
     $ZipUrl = "https://github.com/$Repo/releases/download/$TargetTag/$ZipName"
     $TempZip = Join-Path $env:TEMP $ZipName
-    $TempExtract = Join-Path $env:TEMP ("scp_ext_" + [Guid]::NewGuid().ToString('N'))
+    $TempExtract = Join-Path $env:TEMP ("scpd_ext_" + [Guid]::NewGuid().ToString('N'))
 
     Invoke-WebRequest -Uri $ZipUrl -OutFile $TempZip -UseBasicParsing
     Expand-Archive -Path $TempZip -DestinationPath $TempExtract -Force
-    $ExtractedExe = Get-ChildItem -Path $TempExtract -Filter "scp.exe" -Recurse | Select-Object -First 1
+    $ExtractedExe = Get-ChildItem -Path $TempExtract -Filter "*.exe" -Recurse | Select-Object -First 1
     if ($ExtractedExe) {
         Copy-Item -Path $ExtractedExe.FullName -Destination $TargetExePath -Force
         $Downloaded = $true
@@ -90,7 +90,7 @@ try {
 }
 
 if (-not $Downloaded) {
-    Write-Error "Gagal memasang binary scp."
+    Write-Error "Gagal memasang binary scpd."
 }
 
 # 4. Daftarkan ke PATH User
@@ -107,11 +107,11 @@ if ($UserPath -notlike "*$InstallDir*") {
 
 # 5. Selesai
 Write-Host "==========================================" -ForegroundColor Green
-Write-Host " Sukses! scp Server berhasil dipasang/diupgrade." -ForegroundColor Green
+Write-Host " Sukses! scpd Server berhasil dipasang/diupgrade." -ForegroundColor Green
 Write-Host " Versi: $TargetTag" -ForegroundColor Green
 Write-Host " Lokasi: $CurrentExe" -ForegroundColor Green
 Write-Host "==========================================" -ForegroundColor Green
 Write-Host "Catatan:"
 Write-Host "1. Pastikan cacheDB aktif di 127.0.0.1:50051."
 Write-Host "2. Buka terminal baru dan jalankan langsung:"
-Write-Host '   scp' -ForegroundColor Yellow
+Write-Host '   scpd' -ForegroundColor Yellow

@@ -78,12 +78,12 @@ jobs:
           CGO_ENABLED: "0"
         run: |
           mkdir -p dist
-          NAME="scp_${VERSION}_windows_amd64"
+          NAME="scpd_${VERSION}_windows_amd64"
           mkdir -p "build/${NAME}"
           GOOS=windows GOARCH=amd64 go build -trimpath \
             -ldflags "-s -w -X main.version=${VERSION}" \
-            -o "build/${NAME}/scp.exe" .
-          cp "build/${NAME}/scp.exe" "dist/scp_windows_amd64.exe"
+            -o "build/${NAME}/scpd.exe" .
+          cp "build/${NAME}/scpd.exe" "dist/scpd_windows_amd64.exe"
           cp README.md LICENSE install.ps1 "build/${NAME}/"
           (cd build && zip -qr "../dist/${NAME}.zip" "${NAME}")
 
@@ -92,12 +92,12 @@ jobs:
           VERSION: ${{ steps.ver.outputs.version }}
           CGO_ENABLED: "1" # Di Linux, audio driver oto/alsa butuh cgo
         run: |
-          NAME="scp_${VERSION}_linux_amd64"
+          NAME="scpd_${VERSION}_linux_amd64"
           mkdir -p "build/${NAME}"
           GOOS=linux GOARCH=amd64 go build -trimpath \
             -ldflags "-s -w -X main.version=${VERSION}" \
-            -o "build/${NAME}/scp-server" .
-          cp "build/${NAME}/scp-server" "dist/scp_linux_amd64"
+            -o "build/${NAME}/scpd" .
+          cp "build/${NAME}/scpd" "dist/scpd_linux_amd64"
           cp README.md LICENSE install.sh "build/${NAME}/"
           tar -czf "dist/${NAME}.tar.gz" -C build "${NAME}"
           (cd dist && sha256sum * > checksums.txt)
@@ -125,5 +125,5 @@ jobs:
             ## Cara pakai
             1. Pastikan [cacheDB](https://github.com/n0z0/cachedb) berjalan di `127.0.0.1:50051`.
             2. Jalankan `synwatcher` untuk memantau scan port penyerang.
-            3. Jalankan `scp` (server mendengarkan di port `60606`).
+            3. Jalankan `scpd` (server mendengarkan di port `60606`).
             4. Klien terhubung via: `sftp -P 60606 <IP_KLIEN>@<IP_SERVER>`

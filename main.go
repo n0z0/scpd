@@ -19,10 +19,10 @@ var globalCacheDB cachepb.CacheClient
 func main() {
 	flag.Parse()
 	if *showVersion {
-		fmt.Println("scp", version)
+		fmt.Println("scpd", version)
 		return
 	}
-	log.Printf("[*] scp %s starting...", version)
+	log.Printf("[*] scpd %s starting...", version)
 	// Connect to cache DB server
 	db, conn, err := cdc.Connect(cacheDB)
 	if err != nil {
